@@ -3,6 +3,7 @@ from threading import *
 from datetime import *
 from time import sleep
 import sys
+import os
 
 execution_seconds: int = 0
 
@@ -21,7 +22,7 @@ class application_arguments:
     def handle_arguments():
         arguments: list[str] = sys.argv
         if len(arguments) <= 1:
-            print("ERRORE 1: Inserire almeno un argomento al comando. Per ulteriori informazioni aggiungi --help o -h.")
+            print("ERRORE: Inserire almeno un argomento al comando. Per ulteriori informazioni aggiungi --help o -h.")
         else:
             for index in range(len(arguments) - 1):
                 if index == 0:
@@ -29,15 +30,36 @@ class application_arguments:
             for argument in arguments:
                 if argument == "--help" or argument == "-h":
                     print("OPZIONE 1: --help o -h per visualizzare la lista corrente.")
-                    print("OPZIONE 2: --all o -a per ottenere i dati di tutto il mercato e inserirli in data_container.xml.")
-                    print("OPZIONE 3: --single \"[symbol]\" o -s \"[symbol]\" per ottenere i dati di una singola compagnia.")
+                    print("OPZIONE 2: --get-all o -a per ottenere i dati di tutto il mercato e inserirli in data_container.xml.")
+                    print("OPZIONE 3: --get-single \"[symbol]\" o -s \"[symbol]\" per ottenere i dati di una singola compagnia.")
+                    print("OPZIONE 4: --get-symbols-list o -gsl per ottenere una lista completa di tutti i simboli.")
                     break
-                elif argument == "--all" or argument == "-a":
+                elif argument == "--get-all" or argument == "-ga":
                     operations.fill_data_container()
+                    print(f"RISULTATO NEL FILE: {os.path.dirname(os.path.abspath(__file__))}\\data_container.xml")
                     break
-                elif argument == "--single" or argument == "-s":
-                    symbol: str = arguments[(arguments.index(argument) + 1)]
-                    #codice qui
+                elif argument == "--get-single" or argument == "-gs":
+                    try:
+                        symbol: str = arguments[(arguments.index(argument) + 1)]
+                        xml_handler.reset_file_content()
+                        result: dict = finance.get_single_company_data(symbol)
+                        if result != None:
+                            xml_handler.insert_row(result)
+                            print(f"RISULTATO NEL FILE: {os.path.dirname(os.path.abspath(__file__))}\\data_container.xml")
+                        else:
+                            print("ERRORE: Il simbolo inserito è in un formato errato o non esiste.")
+                    except IndexError:
+                        print("ERRORE: Per l'argomento specificato è necessario inserire un'opzione. Consulta --help o -h per ulteriori informazioni.")
+                    break
+                elif argument == "--get-symbols-list" or argument == "-gsl":
+                    output_counter: int = 0
+                    results: list[str] = finance.get_all_stock_symbols()
+                    for result in results:
+                        print(f"SIMBOLO {output_counter}: {result}")
+                        output_counter += 1
+                    break
+                else:
+                    print("ERRORE: L'argomento inserito risulta inesistente o errato.")
                     break
                     
 class operations:
