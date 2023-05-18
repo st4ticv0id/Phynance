@@ -121,7 +121,7 @@ class finance():
                     else:
                         use_value = value
                     result[key] = use_value
-            result["percentChange"] = str((((int(result["currentPrice"]) - int(result["previousClose"])) / int(result["previousClose"])) * 100 ))
+            result["percentChange"] = "0.00"
             for include in include_only:
                 if include not in result.keys():
                     result[include] = ""
@@ -167,7 +167,7 @@ class finance():
                         else:
                             use_value = value
                         single_result[key] = use_value
-                single_result["percentChange"] = str(round((((int(single_result["currentPrice"]) - int(single_result["previousClose"])) / int(single_result["previousClose"])) * 100 ), 2))
+                single_result["percentChange"] = "0.00"
                 for include in include_only:
                     if include not in single_result.keys():
                         single_result[include] = ""
